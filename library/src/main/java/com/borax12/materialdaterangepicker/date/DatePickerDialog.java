@@ -47,6 +47,7 @@ import com.borax12.materialdaterangepicker.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Locale;
@@ -494,14 +495,29 @@ public class DatePickerDialog extends DialogFragment implements
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.YEAR, 1900);
+                calendar.set(Calendar.MONTH, 0);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                setMinDate(calendar);
                 com.borax12.materialdaterangepicker.date.MonthAdapter.CalendarDay calendarDay;
                 if(tabId.equals("start")){
                     calendarDay = new com.borax12.materialdaterangepicker.date.MonthAdapter.CalendarDay(mCalendar.getTimeInMillis());
-                    mDayPickerView.goTo(calendarDay,true,true,false);
+                    mDayPickerView.goTo(calendarDay,false,true,false);
                 }
                 else{
-                    calendarDay = new com.borax12.materialdaterangepicker.date.MonthAdapter.CalendarDay(mCalendarEnd.getTimeInMillis());
-                    mDayPickerViewEnd.goTo(calendarDay,true,true,false);
+                    setMinDate(mCalendar);
+                    if(mCalendar.getTime().getTime() < mCalendarEnd.getTime().getTime())
+                        calendarDay = new com.borax12.materialdaterangepicker.date.MonthAdapter.CalendarDay(mCalendarEnd.getTimeInMillis());
+                    else
+                        calendarDay = new com.borax12.materialdaterangepicker.date.MonthAdapter.CalendarDay(mCalendar.getTimeInMillis());
+
+                    mDayPickerViewEnd.goTo(calendarDay,false,true,false);
+                    Calendar selectedDay = Calendar.getInstance();
+                    selectedDay.set(Calendar.YEAR, calendarDay.year);
+                    selectedDay.set(Calendar.MONTH, calendarDay.month);
+                    selectedDay.set(Calendar.DAY_OF_MONTH, calendarDay.day);
+                    mCalendarEnd = selectedDay;
 
                 }
             }
